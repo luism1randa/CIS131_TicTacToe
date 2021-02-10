@@ -33,6 +33,8 @@ public class TicTacToe {
             displayFinalResults(matchResult);
 
         } while (IR4.getYorN("Play again? y/n") );
+
+        System.out.println("------Thanks for playing!------");
     }
 
     /**
