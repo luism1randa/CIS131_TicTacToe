@@ -1,10 +1,10 @@
 /**
- *  This is a Tic-Tac-Toe game played in the command line. Player 1 is X and Player 2
- *  is O. Players can play a match which contains a series of games. The game follows
- *  the classic 3-in-a-row rules.
+ *  This is a Tic-Tac-Toe game played in the command line. Players can play a match which
+ *  contains a series of games. The game follows the classic 3-in-a-row rules. Players can
+ *  navigate the program and change their symbols using a menu system.
  *
  *  @author Luis Miranda
- *  @version 1.0
+ *  @version 2.0
  *
  */
 
@@ -14,9 +14,12 @@ public class TicTacToe {
     static final int ROWS = 3;
     static final int COLS = 3;
 
-    static final int X_WIN = 1;
-    static final int O_WIN = 2;
+    static final int FIRST_WINS = 1;
+    static final int SECOND_WINS = 2;
     static final int TIE = 3;
+
+    static String playerOne = "X";
+    static String playerTwo = "O";
 
     /**
      * Entry point for the program
@@ -24,15 +27,36 @@ public class TicTacToe {
      */
     public static void main(String[] args) {
 
-        String[][] gameBoard = new String[ROWS][COLS];
-        int matchResult;
+        int menuSelection;
+        final int SET_SYMBOLS = 1;
+        final int PLAY_GAME = 2;
+        final int EXIT = 3;
 
         do {
-            displayWelcome();
-            matchResult = playMatch(gameBoard);
-            displayFinalResults(matchResult);
 
-        } while (IR4.getYorN("Play again? y/n") );
+            displayMainMenu();
+            menuSelection = IR4.getInteger("Select a menu item: ");
+
+            switch (menuSelection){
+                case SET_SYMBOLS:
+                    changeSymbols();
+                    break;
+                case PLAY_GAME:
+                    String[][] gameBoard = new String[ROWS][COLS];
+                    int matchResult; // Will store the outcome of each match
+
+                    do {
+                        displayWelcome();
+                        matchResult = playMatch(gameBoard);
+                        displayFinalResults(matchResult);
+                    } while (IR4.getYorN("Play again? y/n") );
+                case EXIT:
+                    break;
+                default:
+                    System.err.println("Invalid selection. Try again.");
+            }
+
+        } while (menuSelection != EXIT);
 
         System.out.println("------Thanks for playing!------");
     }
@@ -47,8 +71,8 @@ public class TicTacToe {
     public static int playMatch(String[][] board){
         int gameResult;
 
-        int xScore = 0;
-        int oScore = 0;
+        int playerOneScore = 0;
+        int playerTwoScore = 0;
 
         for (int gameNbr = 1; gameNbr <= NBR_OF_GAMES; gameNbr++) {
             System.out.println("----- Game number " + gameNbr + " -----");
@@ -56,29 +80,29 @@ public class TicTacToe {
             gameResult = playGame(board);
             displayBoard(board);
 
-            if (gameResult == X_WIN){
-                xScore++;
-                System.out.println("X won this game");
-            } else if (gameResult == O_WIN){
-                oScore++;
-                System.out.println("O won this game");
+            if (gameResult == FIRST_WINS){
+                playerOneScore++;
+                System.out.println(playerOne + " won this game");
+            } else if (gameResult == SECOND_WINS){
+                playerTwoScore++;
+                System.out.println(playerTwo + " won this game");
             } else {
-                xScore += 0.5;
-                oScore += 0.5;
+                playerOneScore += 0.5;
+                playerTwoScore += 0.5;
                 System.out.println("Nobody won this game. Tie!");
             }
 
-            System.out.println("The score is: " + xScore + "-" + oScore);
+            System.out.println("The score is: " + playerOneScore + "-" + playerTwoScore);
 
             // If a user has won more than half of the games,
             // They can be declared the winner because the other
             // player can no longer catch up
-            if (xScore > (NBR_OF_GAMES * .5)){
-                return X_WIN;
+            if (playerOneScore > (NBR_OF_GAMES * .5)){
+                return FIRST_WINS;
             }
 
-            if (oScore > (NBR_OF_GAMES * .5)){
-                return O_WIN;
+            if (playerTwoScore > (NBR_OF_GAMES * .5)){
+                return SECOND_WINS;
             }
 
         }
@@ -91,7 +115,7 @@ public class TicTacToe {
     /**
      * Plays a single game of Tic-Tac-Toe for a given match.
      * @param board - 2D array that contains all spots on the board and player symbols
-     * @return the result of the game - X Wins: 1, O: Wins 2, Tie: 3
+     * @return the result of the game - PlayerOne Wins: 1, PlayerTwo: Wins 2, Tie: 3
      */
     public static int playGame (String[][] board){
         int move;
@@ -101,43 +125,45 @@ public class TicTacToe {
         int yPos;
 
         final int WIN = 1;
-        final int CONTINUE = 0;
+        final int KEEP_PLAYING = 0;
 
         initializeBoard(board);
 
         do {
             displayBoard(board);
 
-            // X's turn
-            move = getPlayerMove("What is your move X?", board);
+            // playerOne's turn
+            move = getPlayerMove("What is your move " + playerOne + "?", board);
 
-            // Calculate coordinates for X
-            xPos = move / 10 - 1;
-            yPos = move % 10 - 1;
+            // Covert two-digit number to coordinates playerOne
+            // Subtract 1 from digits to make suitable for array use
+            xPos = move / 10 - 1; // First digit
+            yPos = move % 10 - 1; // Second digit
 
-            // Place X on their chosen spot
-            board[xPos][yPos] = "X";
-            gameResult = checkForWin(board, "X");
+            // Place playerOne on their chosen spot
+            board[xPos][yPos] = playerOne;
+            gameResult = checkForWin(board, playerOne);
 
-            if (gameResult == CONTINUE){
+            if (gameResult == KEEP_PLAYING){
                 displayBoard(board);
 
-                move = getPlayerMove("What is your move O?", board);
+                move = getPlayerMove("What is your move " + playerTwo + "?", board);
 
-                // Calculate coordinates for X
-                xPos = move / 10 - 1;
-                yPos = move % 10 - 1;
+                // Covert two-digit number to coordinates playerTwo
+                // Subtract 1 from digits to make suitable for array use
+                xPos = move / 10 - 1; // First digit
+                yPos = move % 10 - 1; // Second digit
 
-                // Place X on their chosen spot
-                board[xPos][yPos] = "O";
-                gameResult = checkForWin(board, "O");
+                // Place playerTwo on their chosen spot
+                board[xPos][yPos] = playerTwo;
+                gameResult = checkForWin(board, playerTwo);
 
                 if (gameResult == WIN){
-                    gameResult = O_WIN;
+                    gameResult = SECOND_WINS;
                 }
             }
 
-        } while (gameResult == CONTINUE);
+        } while (gameResult == KEEP_PLAYING);
 
         return gameResult; // 1 = X won, 2 = O won, 3 = tie
     }
@@ -223,7 +249,8 @@ public class TicTacToe {
     public static int getPlayerMove(String prompt, String[][] board){
         int playerMove = IR4.getInteger(prompt);
 
-        while (isInvalid(playerMove, board)){
+        while (moveIsInvalid(playerMove, board)){
+            // Error messages are provided by moveIsInvalid()
             playerMove = IR4.getInteger(prompt);
         }
 
@@ -237,7 +264,7 @@ public class TicTacToe {
      * @param board - 2D array that contains all spots on the board and player symbols
      * @return True - move is invalid, False - move is valid
      */
-    public static boolean isInvalid(int playerMove, String[][] board){
+    public static boolean moveIsInvalid(int playerMove, String[][] board){
 
         final int MIN = 11;
         final int MAX = 33;
@@ -300,10 +327,10 @@ public class TicTacToe {
      */
     public static void displayFinalResults(int result){
 
-        if (result == X_WIN){
-            System.out.println("X won the match");
-        } else if (result == O_WIN){
-            System.out.println("O won the match");
+        if (result == FIRST_WINS){
+            System.out.println(playerOne + " won the match");
+        } else if (result == SECOND_WINS){
+            System.out.println(playerTwo + " won the match");
         } else {
             System.out.println("The match is a tie!");
         }
@@ -325,5 +352,119 @@ public class TicTacToe {
         System.out.println();
         System.out.println("The best of 3 games is the winner! Good luck!");
         System.out.println("*************************************************************");
+    }
+
+    /**
+     * Displays menu with options to play, change symbols, or exit program
+     */
+    public static void displayMainMenu(){
+        System.out.println("------ Tic-Tac-Toe -----");
+        System.out.println(" 1. Set User Symbols (" + playerOne + ", " + playerTwo +")");
+        System.out.println(" 2. Play Tic-Tac-Toe");
+        System.out.println(" 3. Exit");
+    }
+
+    /**
+     * Displays menu with options to change symbol for playerOne, player Two, or return
+     * to the main menu
+     */
+    public static void displaySymbolMenu(){
+        System.out.println("------ Set User Symbols -----");
+        System.out.println(" 1. Set Symbol for First Player: " + playerOne);
+        System.out.println(" 2. Set Symbol for Second Player: " + playerTwo);
+        System.out.println(" 3. Return to Main Menu");
+    }
+
+    /**
+     * Presents a menu that allows players to change their symbols or
+     * return to the main menu
+     */
+    public static void changeSymbols(){
+        int menuSelection;
+        final int CHANGE_PLAYER_ONE = 1;
+        final int CHANGE_PLAYER_TWO = 2;
+        final int EXIT = 3;
+
+        do {
+            displaySymbolMenu();
+            menuSelection = IR4.getInteger("Select a menu Item: ");
+            switch (menuSelection){
+                case CHANGE_PLAYER_ONE:
+                    playerOne = getSymbol(CHANGE_PLAYER_ONE);
+                    break;
+                case CHANGE_PLAYER_TWO:
+                    playerTwo = getSymbol(CHANGE_PLAYER_TWO);
+                    break;
+                case EXIT:
+                    break;
+                default:
+                    System.err.println("Invalid selection, Try again");
+            }
+
+        } while (menuSelection != EXIT);
+    }
+
+    /**
+     * Asks user to input a valid new symbol
+     * @param player - the player to be changed
+     * @return a valid new symbol
+     */
+    public static String getSymbol(int player){
+        String newSymbol = IR4.getString("What is your new symbol?");
+
+        while (symbolIsInvalid(newSymbol, player)){
+            // Error messages provided by symbolIsInvalid()
+            newSymbol = IR4.getString("What is your new symbol?");
+        }
+
+        return newSymbol;
+    }
+
+    /**
+     * Checks if a new symbol is valid.
+     * @param symbol - new symbol input by the user
+     * @param player - player to be changed
+     * @return True - symbol is invalid, False - symbol is not invalid
+     */
+    public static boolean symbolIsInvalid(String symbol, int player){
+        final int MAX_LENGTH = 1;
+        if (symbol.length() > MAX_LENGTH){
+            System.err.println("Symbol must be 1 character. Try again.");
+            return true; // Invalid
+        }
+
+        final int PLAYER_ONE = 1;
+        final int PLAYER_TWO = 2;
+
+        switch (player){
+            case PLAYER_ONE:
+                if (symbol.equals(playerTwo)){
+                    System.err.println("The first player can't enter the same value as the second. Try again.");
+                    return true; // Invalid
+                }
+
+                if (symbol.toLowerCase().equals(playerTwo.toLowerCase()) ){
+                    System.err.println("The first player can't enter an uppercase or lowercase version " +
+                            "of the second player's value. Try again.");
+                    return true; // Invalid
+                }
+                break;
+
+            case PLAYER_TWO:
+                if (symbol.equals(playerOne)){
+                    System.err.println("The second player can't enter the same value as the first. Try again.");
+                    return true; // Invalid
+                }
+
+                if (symbol.toLowerCase().equals(playerOne.toLowerCase()) ){
+                    System.err.println("The second player can't enter an uppercase or lowercase version " +
+                            "of the first player's value. Try again.");
+                    return true; // Invalid
+                }
+                break;
+        }
+
+        return false; // Symbols is not invalid
+
     }
 }
