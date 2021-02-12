@@ -125,7 +125,7 @@ public class TicTacToe {
         int yPos;
 
         final int WIN = 1;
-        final int CONTINUE = 0;
+        final int KEEP_PLAYING = 0;
 
         initializeBoard(board);
 
@@ -135,22 +135,24 @@ public class TicTacToe {
             // playerOne's turn
             move = getPlayerMove("What is your move " + playerOne + "?", board);
 
-            // Calculate coordinates for playerOne
-            xPos = move / 10 - 1;
-            yPos = move % 10 - 1;
+            // Covert two-digit number to coordinates playerOne
+            // Subtract 1 from digits to make suitable for array use
+            xPos = move / 10 - 1; // First digit
+            yPos = move % 10 - 1; // Second digit
 
             // Place playerOne on their chosen spot
             board[xPos][yPos] = playerOne;
             gameResult = checkForWin(board, playerOne);
 
-            if (gameResult == CONTINUE){
+            if (gameResult == KEEP_PLAYING){
                 displayBoard(board);
 
                 move = getPlayerMove("What is your move " + playerTwo + "?", board);
 
-                // Calculate coordinates for playerTwo
-                xPos = move / 10 - 1;
-                yPos = move % 10 - 1;
+                // Covert two-digit number to coordinates playerTwo
+                // Subtract 1 from digits to make suitable for array use
+                xPos = move / 10 - 1; // First digit
+                yPos = move % 10 - 1; // Second digit
 
                 // Place playerTwo on their chosen spot
                 board[xPos][yPos] = playerTwo;
@@ -161,7 +163,7 @@ public class TicTacToe {
                 }
             }
 
-        } while (gameResult == CONTINUE);
+        } while (gameResult == KEEP_PLAYING);
 
         return gameResult; // 1 = X won, 2 = O won, 3 = tie
     }
@@ -248,6 +250,7 @@ public class TicTacToe {
         int playerMove = IR4.getInteger(prompt);
 
         while (moveIsInvalid(playerMove, board)){
+            // Error messages are provided by moveIsInvalid()
             playerMove = IR4.getInteger(prompt);
         }
 
@@ -410,6 +413,7 @@ public class TicTacToe {
         String newSymbol = IR4.getString("What is your new symbol?");
 
         while (symbolIsInvalid(newSymbol, player)){
+            // Error messages provided by symbolIsInvalid()
             newSymbol = IR4.getString("What is your new symbol?");
         }
 
@@ -426,7 +430,7 @@ public class TicTacToe {
         final int MAX_LENGTH = 1;
         if (symbol.length() > MAX_LENGTH){
             System.err.println("Symbol must be 1 character. Try again.");
-            return true;
+            return true; // Invalid
         }
 
         final int PLAYER_ONE = 1;
@@ -436,31 +440,31 @@ public class TicTacToe {
             case PLAYER_ONE:
                 if (symbol.equals(playerTwo)){
                     System.err.println("The first player can't enter the same value as the second. Try again.");
-                    return true;
+                    return true; // Invalid
                 }
 
                 if (symbol.toLowerCase().equals(playerTwo.toLowerCase()) ){
                     System.err.println("The first player can't enter an uppercase or lowercase version " +
                             "of the second player's value. Try again.");
-                    return true;
+                    return true; // Invalid
                 }
                 break;
 
             case PLAYER_TWO:
                 if (symbol.equals(playerOne)){
                     System.err.println("The second player can't enter the same value as the first. Try again.");
-                    return true;
+                    return true; // Invalid
                 }
 
                 if (symbol.toLowerCase().equals(playerOne.toLowerCase()) ){
                     System.err.println("The second player can't enter an uppercase or lowercase version " +
                             "of the first player's value. Try again.");
-                    return true;
+                    return true; // Invalid
                 }
                 break;
         }
 
-        return false;
+        return false; // Symbols is not invalid
 
     }
 }
