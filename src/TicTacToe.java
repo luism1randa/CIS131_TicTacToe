@@ -390,10 +390,10 @@ public class TicTacToe {
             menuSelection = IR4.getInteger("Select a menu Item: ");
             switch (menuSelection){
                 case CHANGE_PLAYER_ONE:
-                    playerOne = getSymbol(CHANGE_PLAYER_ONE);
+                    playerOne = getSymbol(CHANGE_PLAYER_ONE, "What is your new symbol player 1?");
                     break;
                 case CHANGE_PLAYER_TWO:
-                    playerTwo = getSymbol(CHANGE_PLAYER_TWO);
+                    playerTwo = getSymbol(CHANGE_PLAYER_TWO, "What is your new symbol player 2?");
                     break;
                 case EXIT:
                     break;
@@ -407,18 +407,49 @@ public class TicTacToe {
     /**
      * Asks user to input a valid new symbol
      * @param player - the player to be changed
+     * @param prompt message prompting the user to input a symbol
      * @return a valid new symbol
      */
-    public static String getSymbol(int player){
-        String newSymbol = IR4.getString("What is your new symbol?");
+    public static String getSymbol(int player, String prompt){
+        String newSymbol = IR4.getString(prompt);
 
+        // symbolIsInvalid(newSymbol, symbolComparison)
         while (symbolIsInvalid(newSymbol, player)){
             // Error messages provided by symbolIsInvalid()
-            newSymbol = IR4.getString("What is your new symbol?");
+            newSymbol = IR4.getString(prompt);
         }
 
         return newSymbol;
     }
+
+
+    /**
+     * Checks if a new symbol is valid.
+     * @param newPlayerSymbol new symbol input by user
+     * @param secondPlayerSymbol symbol of other player to compare against
+     * @return true = symbol is invalid, false = symbol is valid
+     */
+    public static boolean symbolIsInvalid(String newPlayerSymbol, String secondPlayerSymbol){
+        final int MAX_LENGTH = 1;
+        if (newPlayerSymbol.length() > MAX_LENGTH){
+            System.err.println("Symbol must be 1 character. Try again.");
+            return true; // Invalid
+        }
+
+        if (newPlayerSymbol.equals(secondPlayerSymbol)){
+            System.err.println("Your symbol can't be the same value as the other player. Try again");
+            return true; // Invalid
+        }
+
+        if (newPlayerSymbol.toLowerCase().equals(secondPlayerSymbol.toLowerCase() )){
+            System.err.println("You can't enter the an uppercase or lowercase version of the other player's symbol. Try again.");
+            return true; // Invalid
+        }
+
+        return false; // Symbol is valid
+
+    }
+
 
     /**
      * Checks if a new symbol is valid.
