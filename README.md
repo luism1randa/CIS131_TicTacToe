@@ -1,5 +1,4 @@
-# CIS131_TicTacToe
-Tic-Tac-Toe game to played from the command line
+# CIS131_Tic_Tac_Toe_Classic
 
 ## Description
 A game of classic 3-in-a-row Tic-Tac-Toe. In this version, player 1 (X) plays against player 2 (O). 
